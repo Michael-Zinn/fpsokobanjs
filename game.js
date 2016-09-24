@@ -4,7 +4,7 @@ const __ = R.__
 
 
 
-const includes = R.curry((str, substr) => str.includes(substr))
+const includes = R.curry( (str, substr) => str.includes(substr))
 
 const empty = ".";
 const player = "🕷";
@@ -55,7 +55,11 @@ const isPlayer = includes("@&");
 
 
 // Position -> Level -> Bool
-const containsCrate = cellIs("oO");
+// const containsCrate = cellIs("oO");
+const containsCrate = R.curry( (pos, level) => {
+	return R.compose(includes("oO"), getCell(pos, level));
+});
+	
 
 
 
@@ -128,7 +132,7 @@ exports.move = R.curry( (dir, level) => {
 	const toPos = addPos(fromPos, dir);
 	const behindPos = addPos(toPos, dir);
 
-	return R.pipe(
+	const newLevel = R.pipe(
 		R.ifElse(
 			containsCrate(toPos),
 			addCrate(behindPos),
@@ -137,6 +141,8 @@ exports.move = R.curry( (dir, level) => {
 		removePlayer(fromPos),
 		addPlayer(toPos)
 	)(level);
+
+	return newLevel;
 
 });
 	
