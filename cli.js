@@ -44,13 +44,13 @@ const emojiMap = {
 }
 
 
-// TODO pretty emoji.
-const emojify = R.compose(
-	R.join("\n"),
-	R.map(R.compose(
-		R.join(""),
-		R.map((cell) => emojiMap[cell])
-	))
+// Level -> String
+const emojify = R.pipe(
+	R.map(R.pipe(
+		R.map(R.prop(__, emojiMap)),
+		R.join("")
+	)),
+	R.join("\n")
 );
 
 function clearScreen() {

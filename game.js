@@ -41,7 +41,7 @@ const containsCrate = R.curry(R.compose(includes("oO"), getCell));
 
 
 
-// [Cell] -> Cell -> Cell -> Position -> Level -> Level
+//                          [Cell] -> Cell ->       Cell ->    Position -> Level -> Level
 const adjustCell = R.curry( (matches, matchReplace, noMatchReplace, pos, level) => R.adjust(
 	R.adjust(
 		R.ifElse(
