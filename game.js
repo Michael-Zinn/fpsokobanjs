@@ -38,7 +38,7 @@ const isPlayer = includes("@&");
 
 // Position -> Level -> Bool
 // const containsCrate = cellIs("oO");
-const containsCrate = R.compose(includes("oO"), getCell);
+const containsCrate = R.curry(R.compose(includes("oO"), getCell));
 
 
 
