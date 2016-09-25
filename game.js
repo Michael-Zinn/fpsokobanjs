@@ -14,7 +14,7 @@ const subtractPos = R.zipWith(R.subtract);
 
 
 
-// pos -> level -> cell
+// Position -> Level -> Cell
 const getCell = R.curry( (pos, level) => {
 	return level[pos[Y]][pos[X]]
 });

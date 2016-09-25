@@ -75,6 +75,10 @@ function main(level) {
 		};
 	
 		clearScreen();
+	
+		if(game.won(modifyingLevel)) {
+			console.log("  W I N !\n");
+		}
 		console.log(emojify(modifyingLevel));
 
 	}).on('close', () => {
