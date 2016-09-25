@@ -4,29 +4,30 @@ const game = require('./game.js');
 const readline = require('readline');
 
 
-const level = [
-	"######",
-	"#..^^#",
-	"#.#.##",
-	"#....#",
-	"#.o..#",
-	"#.o###",
-	"#..@.#",
-	"#....#",
-	"######"
-];
-const level2 = [
-	".....####..",
-	"######..#..",
-	"#..o...@#..",
-	"#..#.##.##.",
-	"##.#^^...#.",
-	".#..^^##o#.",
-	".#o##.##.##",
-	".#....o...#",
-	".#..###...#",
-	".####.#####"
-].map(R.split(""));
+const levels = [
+	[
+		"######",
+		"#..^^#",
+		"#.#.##",
+		"#....#",
+		"#.o..#",
+		"#.o###",
+		"#..@.#",
+		"#....#",
+		"######"
+	], [
+		".....####..",
+		"######..#..",
+		"#..o...@#..",
+		"#..#.##.##.",
+		"##.#^^...#.",
+		".#..^^##o#.",
+		".#o##.##.##",
+		".#....o...#",
+		".#..###...#",
+		".####.#####"
+	]
+].map(R.map(R.split("")));
 
 
 function toDir(input) { switch(input) {
@@ -82,10 +83,12 @@ function clearScreen() {
 }
 
 
-var modifyingLevel = level;
+var modifyingLevel = null;
 
 function main(level) {
+	modifyingLevel = level;
 	clearScreen();
+
 	console.log(emojify(level));
 
 
@@ -106,4 +109,4 @@ function main(level) {
 }
 
 
-main(level);
+main(levels[0]);
