@@ -1,25 +1,7 @@
 const R = require('ramda');
 const __ = R.__
-//const Promise = require('bluebird');
-
-
 
 const includes = R.curry( (str, substr) => str.includes(substr))
-
-const empty = ".";
-const player = "🕷";
-const goal = "🕸";
-
-const level = [
-	"##########",
-	"#........#",
-	"#...^O^..#",
-	"#........#",
-	"#.o......#",//o
-	"#........#",
-	"#....o@..#",//&
-	"##########"
-].map(R.split(""));
 
 const X = 0;
 const Y = 1;
@@ -55,21 +37,17 @@ const isPlayer = includes("@&");
 
 
 // Position -> Level -> Bool
-// const containsCrate = cellIs("oO");
-const containsCrate = R.curry( (pos, level) => {
-	return R.compose(includes("oO"), getCell(pos, level));
-});
-	
+const containsCrate = R.curry(R.compose(includes("oO"), getCell));
 
 
 
-// Position -> Level -> Level
-const addCrate = R.curry( (pos, level) => R.adjust(
+// [Cell] -> Cell -> Cell -> Position -> Level -> Level
+const adjustCell = R.curry( (matches, matchReplace, noMatchReplace, pos, level) => R.adjust(
 	R.adjust(
 		R.ifElse(
-			includes("^O"),
-			R.always("O"),
-			R.always("o")
+			includes(matches),
+			R.always(matchReplace),
+			R.always(noMatchReplace)
 		),
 		pos[X]
 	),
@@ -80,34 +58,25 @@ const addCrate = R.curry( (pos, level) => R.adjust(
 
 
 // Position -> Level -> Level
-const removePlayer = R.curry( (pos, level) => {
-	return R.adjust(
-		R.adjust(
-			(cell) => (cell == "&") ? "^" : ".",
-			pos[X]
-		),
-		pos[Y],
-		level
-	);
-});
+const addCrate = adjustCell("^O","O","o");
 
 
 
 // Position -> Level -> Level
-const addPlayer = R.curry( (pos, level) => {
-	return R.adjust(
-		R.adjust(
-			R.ifElse(
-				R.contains(__, ["^","O"]),
-				R.always("&"),
-				R.always("@")
-			),
-			pos[X]
-		),
-		pos[Y],
-		level
-	);
-});
+const removePlayer = adjustCell("&", "^", ".");
+
+
+
+// Position -> Level -> Level
+const addPlayer = adjustCell("^O", "&", "@");
+
+
+
+// Level -> Bool
+exports.won = R.pipe(
+	R.unnest,
+	R.none(R.equals("o"))
+); 
 
 
 
@@ -158,4 +127,12 @@ const findPlayer = (level) => {
 
 }
 
+
+
+// some exports for tests:
+exports.addPos = addPos;
+exports.getCell = getCell;
+exports.findPlayer = findPlayer;
+exports.hasRoom = hasRoom;
+exports.containsCrate = containsCrate;
 
