@@ -1,33 +1,8 @@
 const R = require('ramda');
 const __ = R.__;
+const data = require('./data.js');
 const game = require('./game.js');
 const readline = require('readline');
-
-
-const levels = [
-	[
-		"######",
-		"#..^^#",
-		"#.#.##",
-		"#....#",
-		"#.o..#",
-		"#.o###",
-		"#..@.#",
-		"#....#",
-		"######"
-	], [
-		".....####..",
-		"######..#..",
-		"#..o...@#..",
-		"#..#.##.##.",
-		"##.#^^...#.",
-		".#..^^##o#.",
-		".#o##.##.##",
-		".#....o...#",
-		".#..###...#",
-		".####.#####"
-	]
-].map(R.map(R.split("")));
 
 
 function toDir(input) { switch(input) {
@@ -82,7 +57,6 @@ function clearScreen() {
 	R.forEach(() => console.log(),R.range(1,100));
 }
 
-
 var modifyingLevel = null;
 
 function main(level) {
@@ -109,4 +83,4 @@ function main(level) {
 }
 
 
-main(levels[0]);
+main(data.levels[0]);
