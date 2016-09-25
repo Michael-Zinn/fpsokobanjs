@@ -1,25 +1,7 @@
 const R = require('ramda');
 const __ = R.__
-//const Promise = require('bluebird');
-
-
 
 const includes = R.curry( (str, substr) => str.includes(substr))
-
-const empty = ".";
-const player = "🕷";
-const goal = "🕸";
-
-const level = [
-	"##########",
-	"#........#",
-	"#...^O^..#",
-	"#........#",
-	"#.o......#",//o
-	"#........#",
-	"#....o@..#",//&
-	"##########"
-].map(R.split(""));
 
 const X = 0;
 const Y = 1;
@@ -56,10 +38,7 @@ const isPlayer = includes("@&");
 
 // Position -> Level -> Bool
 // const containsCrate = cellIs("oO");
-const containsCrate = R.curry( (pos, level) => {
-	return R.compose(includes("oO"), getCell(pos, level));
-});
-	
+const containsCrate = R.compose(includes("oO"), getCell);
 
 
 
@@ -158,4 +137,12 @@ const findPlayer = (level) => {
 
 }
 
+
+
+// some exports for tests:
+exports.addPos = addPos;
+exports.getCell = getCell;
+exports.findPlayer = findPlayer;
+exports.hasRoom = hasRoom;
+exports.containsCrate = containsCrate;
 
