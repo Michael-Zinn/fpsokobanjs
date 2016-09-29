@@ -99,13 +99,15 @@ const containsCrate = positionIsLike("oO");
 
 
 
-// (Cell -> Cell) -> Position -> Level -> Level
-const adjustCell = R.curry( (f, pos, level) => R.adjust(
+//                           (Cell -> Cell) -> Position -> Level  -> Level
+const adjustCell = R.curry(( f              ,  pos      ,  level) => R.adjust(
 	R.adjust(f, pos[X]),
 	pos[Y]
 )(level));	
 
-//                          [Cell] -> Cell ->       Cell ->  Position -> Level  -> Level
+
+
+//                              [Cell] -> Cell ->       Cell ->  Position -> Level  -> Level
 const adjustCellLike = R.curry( (matches, matchReplace, noMatchReplace, pos, level) => adjustCell(
 	R.ifElse(
 		cellIsLike(matches),
