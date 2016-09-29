@@ -99,26 +99,29 @@ const containsCrate = positionIsLike("oO");
 
 
 
+// (Cell -> Cell) -> Position -> Level -> Level
+const adjustCell = R.curry( (f, pos, level) => R.adjust(
+	R.adjust(f, pos[X]),
+	pos[Y]
+)(level));	
+
 //                          [Cell] -> Cell ->       Cell ->  Position -> Level  -> Level
-const adjustCell = R.curry( (matches, matchReplace, noMatchReplace, pos, level) => R.adjust(
-	R.adjust(
-		R.ifElse(
-			cellIsLike(matches),
-			R.always(matchReplace),
-			R.always(noMatchReplace)
-		),
-		pos[X]
+const adjustCellLike = R.curry( (matches, matchReplace, noMatchReplace, pos, level) => adjustCell(
+	R.ifElse(
+		cellIsLike(matches),
+		R.always(matchReplace),
+		R.always(noMatchReplace)
 	),
-	pos[Y],
-	level
+       	pos,
+       	level
 ));
 
 
 
 // Position -> Level -> Level
-const addPlayer    = adjustCell("^O", "&", "@");
-const removePlayer = adjustCell("&" , "^", ".");
-const addCrate     = adjustCell("^" , "O", "o");
+const addPlayer    = adjustCellLike("^O", "&", "@");
+const removePlayer = adjustCellLike("&" , "^", ".");
+const addCrate     = adjustCellLike("^" , "O", "o");
 
 
 
