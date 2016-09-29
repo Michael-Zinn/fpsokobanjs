@@ -17,6 +17,14 @@ e.g. [1,0]
 
 type Cell = "." | "^" | "o" | "O" | "@" | "&" | "#"
 
+// .   empty
+// ^   goal
+// o   crate
+// O   crate on goal (^ + o)
+// @   player
+// &   player on goal (^ + @)
+// #   wall
+
 type Level [[Cell]]
 e.g. [["#","#"],["@","."]]
 
@@ -24,11 +32,17 @@ e.g. [["#","#"],["@","."]]
 */
 module.exports = {
 
-	// Direction
-	left: [-1,  0],
-	right:[ 1,  0],
-	up:   [ 0, -1],
-	down: [ 0,  1],
+	Direction: {
+		LEFT:  [-1,  0],
+		RIGHT: [ 1,  0],
+		UP:    [ 0, -1],
+		DOWN:  [ 0,  1]
+	},
+
+	Dimension: {
+		X: 0,
+		Y: 1
+	},
 
 	// [Level]
 	levels: [
@@ -42,7 +56,8 @@ module.exports = {
 			"#..@.#",
 			"#....#",
 			"######"
-		], [
+		],
+	       	[
 			".....####..",
 			"######..#..",
 			"#..o...@#..",
@@ -53,7 +68,8 @@ module.exports = {
 			".#....o...#",
 			".#..###...#",
 			".####.#####"
-		], [
+		],
+	       	[
 			"^O^O^O^O^O^O^O^O^O",
 			"O################^",
 			"^#...#....#.O..^#O",

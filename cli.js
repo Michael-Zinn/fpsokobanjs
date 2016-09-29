@@ -1,39 +1,14 @@
 const R = require('ramda');
 const __ = R.__;
-const data = require('./data.js');
-const game = require('./game.js');
+const data = require('./data');
+const Dir = data.Direction;
+const game = require('./game');
 const readline = require('readline');
 
 
-function toDir(input) { switch(input) {
-	case "w":
-	case ".":
-	case "k":
-		return [ 0,-1];
-	case "a":
-	case "o":
-	case "h":
-		return [-1, 0];
-	case "s":
-	case "e":
-	case "j":
-		return [ 0, 1];
-	case "d":
-	case "u":
-	case "l":
-		return [ 1, 0];
-	default:
-		return [0,0];
-}}
 
-const rl = readline.createInterface({
-	input: process.stdin,
-	output: process.stdout,
-	prompt: '\n\nREADY.\n'
-});
-
-
-const emojiMap = {
+// Cell -> Emoji
+const toEmoji = R.prop(__, {
 	"@": "🕷 ",
 	"&": "🕷 ",
 	"#": "██",
@@ -41,50 +16,106 @@ const emojiMap = {
 	"^": "🕸 ",
 	"o": "☻ ",
 	"O": "💀 "
-}
+});
+
 
 
 // Level -> String
 const emojify = R.pipe(
 	R.map(R.pipe(
-		R.map(R.prop(__, emojiMap)),
+		R.map(toEmoji),
 		R.join("")
 	)),
 	R.join("\n")
 );
 
+
+
+// a -> (a | null | undefined ) -> a
+const nilTo = R.curry( (fallback, value) => {
+	if(R.isNil(value)) {
+		return fallback;
+	} else {
+		return value;
+	}
+});
+
+
+
+// String -> Direction
+const toDir = R.pipe( R.prop(__, {
+
+	// W A S D
+	"w": Dir.UP,
+	"a": Dir.LEFT,
+	"s": Dir.DOWN,
+	"d": Dir.RIGHT,
+
+	// Nethack (Vi)
+	"h": Dir.LEFT,
+	"j": Dir.DOWN,
+	"k": Dir.UP,
+	"l": Dir.RIGHT,
+
+	// Dvorak
+	".": Dir.UP,
+	"o": Dir.LEFT,
+	"e": Dir.DOWN,
+	"u": Dir.RIGHT
+
+}), nilTo([0,0]));
+
+
+
+// NodeJsStuff
+const rl = readline.createInterface({
+	input: process.stdin,
+	output: process.stdout,
+	prompt: '\n\nREADY.\n'
+});
+
+
+
+///////////////////////////////////////////////////////////
+// impure imperative code starts here /////////////////////
+///////////////////////////////////////////////////////////
+
 function clearScreen() {
 	R.forEach(() => console.log(),R.range(1,100));
 }
 
-var modifyingLevel = null;
+// Level
+var mutableLevel = null;
 
+// IO ()
 function main(level) {
-	modifyingLevel = level;
+	mutableLevel = level;
 	clearScreen();
 
 	console.log(emojify(level));
 
-
 	rl.on('line', (line) => {
+		
+		// Direction
 		const dir = toDir(line);
-		if(game.canMove(dir,modifyingLevel)) {
-			modifyingLevel = game.move(dir,modifyingLevel);
-		} else {
 
-		};
-	
+		mutableLevel = R.ifElse(
+			game.canMove(dir),
+			game.move(dir),
+			R.identity
+		)(mutableLevel);
+
 		clearScreen();
 	
-		if(game.won(modifyingLevel)) {
+		if(game.won(mutableLevel)) {
 			console.log("   W I N !\n");
 		}
-		console.log(emojify(modifyingLevel));
+
+		console.log(emojify(mutableLevel));
 
 	}).on('close', () => {
 		process.exit(0);
 	});
 }
-
 
 main(data.levels[0]);

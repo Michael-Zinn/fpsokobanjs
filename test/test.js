@@ -83,9 +83,9 @@ describe('game', function() {
 
 
 
-	describe("#getCell", () => {
+	describe("#cellAt", () => {
 		it('should find the bottom center cell', () => {
-			expect(	game.getCell([1,2], ["###","#..","o@."].map(R.split("")))).to.equal("@");
+			expect(	game.cellAt([1,2], ["###","#..","o@."].map(R.split("")))).to.equal("@");
 		});
 	});
 
@@ -102,17 +102,12 @@ describe('game', function() {
 	describe('#canMove', () => {
 		it('should not be allowed to move up', () => {
 			expect(game.canMove(dir.up, level.base)).to.be.false;
-			//prettyCompare(level.base, game.move(dir.up, level.base));
 		});
 	});
 
 
 
 	describe('#move', () => {
-		const prettyCompare = (l1, l2) => 
-			expect(l1.map(R.join(""))).to.equal(l2.map(R.join("")));
-
-
 		['left', 'right', 'down'].map((direction) => {
 			it('should move ' + direction, () => {
 				expect(game.move(dir[direction],level.base)).to.eql(level[direction]);

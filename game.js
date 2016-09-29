@@ -1,51 +1,109 @@
 const R = require('ramda');
 const __ = R.__
-
-const includes = R.curry( (str, substr) => str.includes(substr))
-
-const X = 0;
-const Y = 1;
+const data = require('./data');
 
 
 
-// Position -> Position -> Position
-const addPos      = R.zipWith(R.add);
-const subtractPos = R.zipWith(R.subtract);
+// Dimension
+const X = data.Dimension.X;
+const Y = data.Dimension.Y;
 
 
 
-// Position -> Level -> Cell
-const getCell = R.curry( (pos, level) => {
-	return level[pos[Y]][pos[X]]
+// Level -> Bool
+exports.won = R.none(R.any(R.equals("o"))); 
+
+
+
+// Direction -> Level -> Bool
+exports.canMove = R.curry( (dir, level) => {
+
+	// Position
+	const origin = findPlayer(level);
+	const destination = addPos(origin, dir);
+	const behindDestination = addPos(destination, dir);
+
+	return hasRoom(destination, level) ||
+		(containsCrate(destination, level) && hasRoom(behindDestination, level));
+
 });
 
 
 
-// [Cell] -> Position -> Level -> Bool
-const cellIs = (cells) => R.compose(includes(cells), getCell);
+// Direction -> Level -> Level
+exports.move = R.curry( (dir, level) => {
+
+	// Position
+	const origin = findPlayer(level);
+	const destination = addPos(origin, dir);
+	const behindDestination = addPos(destination, dir);
+
+	return R.pipe(
+		R.ifElse(
+			containsCrate(destination),
+			addCrate(behindDestination),
+			R.identity
+		),
+		removePlayer(origin),
+		addPlayer(destination)
+	)(level);
+
+});
+	
+
+
+// Position -> Position -> Position
+const addPos = R.zipWith(R.add);
 
 
 
-// Position -> Level -> Bool
-const hasRoom = cellIs(".^");
+// Level -> Position
+const findPlayer = (level) => {
+
+	// Number
+	const playerY = R.findIndex(R.any(isPlayer), level);
+	const playerX = R.findIndex(isPlayer, level[playerY]);
+
+	return [playerX, playerY];
+
+}
+
+
+
+// [Cell] -> Cell -> Bool
+const cellIsLike = R.curry( (str, substr) => str.includes(substr) )
 
 
 
 // Cell -> Bool
-const isPlayer = includes("@&");
+const isPlayer = cellIsLike("@&");
+
+
+
+// Position -> Level -> Cell
+const cellAt = R.curry( (pos, level) => level[pos[Y]][pos[X]] );
+
+
+
+// [Cell] -> Position -> Level -> Bool
+const positionIsLike = (cells) => R.curry(R.pipe(
+	cellAt,
+	cellIsLike(cells)
+));
 
 
 
 // Position -> Level -> Bool
-const containsCrate = R.curry(R.compose(includes("oO"), getCell));
+const hasRoom       = positionIsLike(".^");
+const containsCrate = positionIsLike("oO");
 
 
 
-//                          [Cell] -> Cell ->       Cell ->    Position -> Level -> Level
+//                          [Cell] -> Cell ->       Cell ->  Position -> Level  -> Level
 const adjustCell = R.curry( (matches, matchReplace, noMatchReplace, pos, level) => R.adjust(
 	R.adjust(
 		R.ifElse(
-			includes(matches),
+			cellIsLike(matches),
 			R.always(matchReplace),
 			R.always(noMatchReplace)
 		),
@@ -58,80 +116,15 @@ const adjustCell = R.curry( (matches, matchReplace, noMatchReplace, pos, level) 
 
 
 // Position -> Level -> Level
-const addCrate = adjustCell("^O","O","o");
-
-
-
-// Position -> Level -> Level
-const removePlayer = adjustCell("&", "^", ".");
-
-
-
-// Position -> Level -> Level
-const addPlayer = adjustCell("^O", "&", "@");
-
-
-
-// Level -> Bool
-exports.won = R.pipe(
-	R.unnest,
-	R.none(R.equals("o"))
-); 
-
-
-
-// Direction -> Level -> Bool
-exports.canMove = R.curry( (dir, level) => {
-
-	const fromPos = findPlayer(level);
-	const toPos = addPos(fromPos, dir);
-	const behindPos = addPos(toPos, dir);
-
-	return hasRoom(toPos, level) ||
-		(containsCrate(toPos, level) && hasRoom(behindPos, level));
-
-});
-
-
-
-// Direction -> Level -> Level
-exports.move = R.curry( (dir, level) => {
-
-	const fromPos = findPlayer(level);
-	const toPos = addPos(fromPos, dir);
-	const behindPos = addPos(toPos, dir);
-
-	const newLevel = R.pipe(
-		R.ifElse(
-			containsCrate(toPos),
-			addCrate(behindPos),
-			R.identity
-		),
-		removePlayer(fromPos),
-		addPlayer(toPos)
-	)(level);
-
-	return newLevel;
-
-});
-	
-	
-
-// Level -> Position
-const findPlayer = (level) => {
-
-	const playerY = R.findIndex(R.any(isPlayer), level);
-	const playerX = R.findIndex(isPlayer, level[playerY]);
-
-	return [playerX, playerY];
-
-}
+const addPlayer    = adjustCell("^O", "&", "@");
+const removePlayer = adjustCell("&" , "^", ".");
+const addCrate     = adjustCell("^" , "O", "o");
 
 
 
 // some exports for tests:
 exports.addPos = addPos;
-exports.getCell = getCell;
+exports.cellAt = cellAt;
 exports.findPlayer = findPlayer;
 exports.hasRoom = hasRoom;
 exports.containsCrate = containsCrate;
