@@ -11,7 +11,7 @@ const Y = data.Dimension.Y;
 
 
 // Level -> Bool
-exports.won = R.none(R.any(R.equals("o"))); 
+exports.won = R.none(R.contains("o")); 
 
 
 
