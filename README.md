@@ -2,6 +2,18 @@
 
 A Sokoban game written in the functional programming style.
 
-Makes heavy use of Ramda.js
+![Commandline Screenshot](fpsokobanjs.png)
 
-Both data.js and game.js illustrate FP nicely. Cli.js on the other hand is more imperative than it needs to be: reading user input should be done with bluebird promises instead of event callbacks. Using promises with recursion would make the single variable obsolete.
+Makes heavy use of currying, mapping, pipes and other [Ramda.js features](ramdajs.com/docs/).
+
+File | Content
+-----|--------
+data.js | data types
+game.js | game logic
+cli.js | command line "GUI"
+
+## How to play
+
+* Move around by entering a direction, either as WASD, HJKL or .OEU followed by the ENTER key, e.g. enter w to move up.
+* You control the spider. The goal is to move the smileys onto the spider webs.
+* You can only push one smiley at a time.
