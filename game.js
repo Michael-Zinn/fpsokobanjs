@@ -1,17 +1,15 @@
 const R = require('ramda');
 const __ = R.__
+
 const data = require('./data');
-
-
-
-// Dimension
+const Cell = data.Cell;
 const X = data.Dimension.X;
 const Y = data.Dimension.Y;
 
 
 
 // Level -> Bool
-exports.won = R.none(R.contains("o")); 
+exports.won = R.none(R.contains(Cell.MISPLACED_CRATE));//"o")); 
 
 
 
@@ -23,8 +21,8 @@ exports.canMove = R.curry( (dir, level) => {
 	const destination = addPos(origin, dir);
 	const behindDestination = addPos(destination, dir);
 
-	return hasRoom(destination, level) ||
-		(containsCrate(destination, level) && hasRoom(behindDestination, level));
+	return positionHasRoom(destination, level) ||
+		(positionContainsCrate(destination, level) && positionHasRoom(behindDestination, level));
 
 });
 
@@ -40,7 +38,7 @@ exports.move = R.curry( (dir, level) => {
 
 	return R.pipe(
 		R.ifElse(
-			containsCrate(destination),
+			positionContainsCrate(destination),
 			addCrate(behindDestination),
 			R.identity
 		),
@@ -71,12 +69,12 @@ const findPlayer = (level) => {
 
 
 // [Cell] -> Cell -> Bool
-const cellIsLike = R.curry( (str, substr) => str.includes(substr) )
+const cellIsLike = R.flip(R.contains);
 
 
 
 // Cell -> Bool
-const isPlayer = cellIsLike("@&");
+const isPlayer = cellIsLike([Cell.PLAYER_ON_EMPTY, Cell.PLAYER_ON_GOAL]);
 
 
 
@@ -93,9 +91,15 @@ const positionIsLike = (cells) => R.curry(R.pipe(
 
 
 
+// Cell -> Bool
+const cellHasRoom       = cellIsLike([Cell.EMPTY, Cell.GOAL]);
+const cellContainsCrate = cellIsLike([Cell.MISPLACED_CRATE, Cell.CRATE_ON_GOAL]);
+const cellContainsGoal  = cellIsLike([Cell.GOAL, Cell.CRATE_ON_GOAL, Cell.PLAYER_ON_GOAL]);
+
 // Position -> Level -> Bool
-const hasRoom       = positionIsLike(".^");
-const containsCrate = positionIsLike("oO");
+const positionHasRoom       = R.curry(R.pipe(cellAt, cellHasRoom));
+const positionContainsCrate = R.curry(R.pipe(cellAt, cellContainsCrate));
+const positionContainsGoal  = R.curry(R.pipe(cellAt, cellContainsGoal));
 
 
 
@@ -107,6 +111,19 @@ const adjustCell = R.curry(( f              ,  pos      ,  level) => R.adjust(
 
 
 
+//                           (Cell -> Bool) -> Cell -> Cell -> Position -> Level -> Level
+const adjustCellIfElse = R.curry(( condition, thenCell, elseCell, pos, level) => adjustCell(
+	R.ifElse(
+		condition,
+		R.always(thenCell),
+		R.always(elseCell)
+	),
+	pos,
+	level
+));
+
+
+/*
 //                              [Cell] -> Cell ->       Cell ->  Position -> Level  -> Level
 const adjustCellLike = R.curry( (matches, matchReplace, noMatchReplace, pos, level) => adjustCell(
 	R.ifElse(
@@ -117,20 +134,29 @@ const adjustCellLike = R.curry( (matches, matchReplace, noMatchReplace, pos, lev
        	pos,
        	level
 ));
-
+*/
 
 
 // Position -> Level -> Level
-const addPlayer    = adjustCellLike("^O", "&", "@");
-const removePlayer = adjustCellLike("&" , "^", ".");
-const addCrate     = adjustCellLike("^" , "O", "o");
-
+const addPlayer    = adjustCellIfElse(cellContainsGoal, Cell.PLAYER_ON_GOAL, Cell.PLAYER_ON_EMPTY);
+const removePlayer = adjustCellIfElse(cellContainsGoal, Cell.GOAL, Cell.EMPTY);
+const addCrate     = adjustCellIfElse(cellContainsGoal, Cell.CRATE_ON_GOAL, Cell.MISPLACED_CRATE);
 
 
 // some exports for tests:
 exports.addPos = addPos;
 exports.cellAt = cellAt;
 exports.findPlayer = findPlayer;
-exports.hasRoom = hasRoom;
-exports.containsCrate = containsCrate;
+exports.cellIsLike = cellIsLike;
+exports.cellHasRoom = cellHasRoom;
+exports.cellContainsCrate = cellContainsCrate;
+exports.cellContainsGoal = cellContainsGoal;
+exports.positionHasRoom = positionHasRoom;
+exports.positionContainsCrate = positionContainsCrate;
+exports.positionContainsGoal = positionContainsGoal;
+exports.adjustCell = adjustCell;
+exports.adjustCellIfElse = adjustCellIfElse;
+exports.addPlayer = addPlayer;
+exports.removePlayer = removePlayer;
+exports.addCrate = addCrate;
 

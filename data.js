@@ -44,6 +44,16 @@ module.exports = {
 		Y: 1
 	},
 
+	Cell: {
+		EMPTY:           ".",
+		GOAL:            "^",
+		MISPLACED_CRATE: "o",
+		CRATE_ON_GOAL:   "O",
+		PLAYER_ON_EMPTY: "@",
+		PLAYER_ON_GOAL:  "&",
+		WALL:            "#"
+	},
+
 	// [Level]
 	levels: [
 		[

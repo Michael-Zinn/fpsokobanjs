@@ -3,7 +3,8 @@ const __ = R.__;
 const data = require('./data');
 const Dir = data.Direction;
 const game = require('./game');
-const readline = require('readline');
+const Promise = require('bluebird');
+const readlineAsync = require('readline-async');
 
 
 
@@ -20,12 +21,17 @@ const toEmoji = R.prop(__, {
 
 
 
+// [Cell] -> String
+const cellsToString = R.pipe(
+	R.map(toEmoji),
+	R.join("")
+);
+
+
+
 // Level -> String
 const emojify = R.pipe(
-	R.map(R.pipe(
-		R.map(toEmoji),
-		R.join("")
-	)),
+	R.map(cellsToString),
 	R.join("\n")
 );
 
@@ -67,55 +73,49 @@ const toDir = R.pipe( R.prop(__, {
 
 
 
-// NodeJsStuff
-const rl = readline.createInterface({
-	input: process.stdin,
-	output: process.stdout,
-	prompt: '\n\nREADY.\n'
-});
-
-
-
-///////////////////////////////////////////////////////////
-// impure imperative code starts here /////////////////////
-///////////////////////////////////////////////////////////
-
-function clearScreen() {
+// IO () 
+const clearScreen = () => {
 	R.forEach(() => console.log(),R.range(1,100));
 }
 
-// Level
-var mutableLevel = null;
 
-// IO ()
-function main(level) {
-	mutableLevel = level;
+
+// Level -> IO ()
+const play = (level) => {
+
 	clearScreen();
 
-	console.log(emojify(level));
-
-	rl.on('line', (line) => {
-		
-		// Direction
-		const dir = toDir(line);
-
-		mutableLevel = R.ifElse(
+	if(game.won(level)) {
+		console.log("   W I N!\n");
+		console.log(emojify(level));
+		return Promise.resolve();
+	} else {
+		console.log(emojify(level));
+		console.log("\n");
+		return readlineAsync()
+		.then(toDir) // ".then" can mean map ...
+		.then(dir => R.ifElse(
 			game.canMove(dir),
 			game.move(dir),
 			R.identity
-		)(mutableLevel);
+		)(level))
+		.then(play); // ... but also >>=/bind/chain/flatMap
 
-		clearScreen();
-	
-		if(game.won(mutableLevel)) {
-			console.log("   W I N !\n");
-		}
-
-		console.log(emojify(mutableLevel));
-
-	}).on('close', () => {
-		process.exit(0);
-	});
+		return F.do([
+			readlineAsync(),
+			toDir,
+			(dir) => R.ifElse(
+				game.canMove(dir),
+				game.move(dir),
+				R.identity
+			)(level),
+			play
+		]);
+	}
 }
 
-main(data.levels[0]);
+
+
+// "main" : IO ()
+play(data.levels[0])
+.then( () => console.log("EOL"));
