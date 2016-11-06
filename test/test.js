@@ -92,7 +92,7 @@ describe('game', function() {
 
 
 	
-	describe("cellIsLike", () => {
+	describe("#cellIsLike", () => {
 		it('should be like', () => {
 			expect(game.cellIsLike([Cell.EMPTY, Cell.WALL],Cell.EMPTY)).to.be.true;
 		});

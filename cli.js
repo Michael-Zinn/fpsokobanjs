@@ -1,3 +1,4 @@
+#! /usr/bin/env node
 const R = require('ramda');
 const __ = R.__;
 const data = require('./data');
@@ -91,7 +92,7 @@ const play = (level) => {
 		return Promise.resolve();
 	} else {
 		console.log(emojify(level));
-		console.log("\n");
+		console.log("");
 		return readlineAsync()
 		.then(toDir) // ".then" can mean map ...
 		.then(dir => R.ifElse(
