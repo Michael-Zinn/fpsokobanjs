@@ -6,6 +6,10 @@
   "bin": {
     "fpsokobanjs": "cli.js"
   },
+  "repository": {
+    "type":"git",
+    "url":"https://github.com/RedNifre/fpsokobanjs"
+  },
   "scripts": {
     "test": "mocha"
   },

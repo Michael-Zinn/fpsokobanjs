@@ -1,16 +1,25 @@
 # FP Sokoban
 
-A Sokoban game written in the functional programming style.
+A Sokoban game written in the functional programming style. Makes heavy use of currying, mapping, pipes and other [Ramda.js features](ramdajs.com/docs/).
 
 ![Commandline Screenshot](fpsokobanjs.png)
 
-Makes heavy use of currying, mapping, pipes and other [Ramda.js features](ramdajs.com/docs/).
+## Why?
+
+To have a small illustration of functional programming concepts.
+
+It is recommended to read the code in this order:
 
 File | Content
 -----|--------
-data.js | data types
-game.js | game logic
-cli.js | command line "GUI"
+data.js | data types, very basic
+game.js | game logic, uses mappings, currying etc.
+cli.js | command line "GUI", uses IO monads/promises
+
+## Installation
+
+	$ npm install -g fpsokobanjs
+	$ fpsokobanjs
 
 ## How to play
 
