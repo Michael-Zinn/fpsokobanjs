@@ -12,22 +12,11 @@ const R = require('ramda');
 type Position = [Number]
 e.g. [3,4]
 
-type Direction = Position
+type Direction = Position // this makes it possible to implement movement as addition.
 e.g. [1,0]
 
-type Cell = "." | "^" | "o" | "O" | "@" | "&" | "#"
-
-// .   empty
-// ^   goal
-// o   crate
-// O   crate on goal (^ + o)
-// @   player
-// &   player on goal (^ + @)
-// #   wall
-
-type Level [[Cell]]
+type Level = [[Cell]]
 e.g. [["#","#"],["@","."]]
-
 
 */
 module.exports = {
@@ -79,7 +68,7 @@ module.exports = {
 			".#..###...#",
 			".####.#####"
 		],
-	       	[
+	       	[ // not really a level
 			"^O^O^O^O^O^O^O^O^O",
 			"O################^",
 			"^#...#....#.O..^#O",
