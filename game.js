@@ -9,7 +9,7 @@ const Y = data.Dimension.Y;
 
 
 // Level -> Bool
-exports.won = R.none(R.contains(Cell.MISPLACED_CRATE));//"o")); 
+exports.won = R.none(R.contains(Cell.MISPLACED_CRATE)); 
 
 
 
@@ -123,24 +123,12 @@ const adjustCellIfElse = R.curry(( condition, thenCell, elseCell, pos, level) =>
 ));
 
 
-/*
-//                              [Cell] -> Cell ->       Cell ->  Position -> Level  -> Level
-const adjustCellLike = R.curry( (matches, matchReplace, noMatchReplace, pos, level) => adjustCell(
-	R.ifElse(
-		cellIsLike(matches),
-		R.always(matchReplace),
-		R.always(noMatchReplace)
-	),
-       	pos,
-       	level
-));
-*/
-
 
 // Position -> Level -> Level
 const addPlayer    = adjustCellIfElse(cellContainsGoal, Cell.PLAYER_ON_GOAL, Cell.PLAYER_ON_EMPTY);
 const removePlayer = adjustCellIfElse(cellContainsGoal, Cell.GOAL, Cell.EMPTY);
 const addCrate     = adjustCellIfElse(cellContainsGoal, Cell.CRATE_ON_GOAL, Cell.MISPLACED_CRATE);
+
 
 
 // some exports for tests:

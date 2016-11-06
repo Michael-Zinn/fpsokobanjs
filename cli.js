@@ -93,6 +93,7 @@ const play = (level) => {
 	} else {
 		console.log(emojify(level));
 		console.log("");
+
 		return readlineAsync()
 		.then(toDir) // ".then" can mean map ...
 		.then(dir => R.ifElse(
@@ -100,18 +101,7 @@ const play = (level) => {
 			game.move(dir),
 			R.identity
 		)(level))
-		.then(play); // ... but also >>=/bind/chain/flatMap
-
-		return F.do([
-			readlineAsync(),
-			toDir,
-			(dir) => R.ifElse(
-				game.canMove(dir),
-				game.move(dir),
-				R.identity
-			)(level),
-			play
-		]);
+		.then(play); // ... but also >>= / bind / chain / flatMap
 	}
 }
 
