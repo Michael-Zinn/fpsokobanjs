@@ -11,6 +11,7 @@
     "url":"https://github.com/RedNifre/fpsokobanjs"
   },
   "scripts": {
+    "start": "node cli.js",
     "test": "mocha"
   },
   "keywords": [
