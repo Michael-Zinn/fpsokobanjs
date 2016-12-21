@@ -16,7 +16,11 @@ data.js | data types, very basic
 game.js | game logic, uses mappings, currying etc.
 cli.js | command line "GUI", uses IO monads/promises
 
-## Installation
+## Play directly through docker (requires docker)
+
+	$ docker run -it rednifre/fpsokobanjs
+
+## Install, then play (requires npm)
 
 	$ npm install -g fpsokobanjs
 	$ fpsokobanjs
