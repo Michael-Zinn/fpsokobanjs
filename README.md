@@ -1,6 +1,6 @@
 # FP Sokoban
 
-A Sokoban game written in the functional programming style. Makes heavy use of currying, mapping, pipes and other [Ramda.js features](ramdajs.com/docs/). 100% variable free!
+A Sokoban game written in the functional programming style. Makes heavy use of currying, mapping, pipes and other [Ramda.js features](http://ramdajs.com/docs/). 100% variable free!
 
 ![Commandline Screenshot](fpsokobanjs.png)
 
